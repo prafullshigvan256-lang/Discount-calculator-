@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mehta Jewellers - Discount Voucher</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f1f1f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MJ Voucher">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{ --gold:#b8860b; --dark:#1f1f1f; --line:#ddd; --green:#2f7a4b; --red:#b33; }
+  *{box-sizing:border-box;}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#e9e6df;margin:0;padding:14px;color:var(--dark);font-size:13px;}
+  .sheet{max-width:1100px;margin:0 auto;background:#fff;padding:16px 20px 20px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .brand{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--dark);padding-bottom:8px;margin-bottom:12px;}
+  .logo{width:34px;height:34px;background:linear-gradient(135deg,#c99a3f,#7a5a20);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:17px;}
+  .brand h1{margin:0;font-size:17px;} .brand p{margin:0;font-size:10.5px;color:#777;}
+
+  .topline{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+  .field{flex:1;min-width:120px;}
+  .field label,.box label{display:block;font-size:9.5px;letter-spacing:.04em;color:#888;text-transform:uppercase;margin-bottom:3px;}
+  .field input{width:100%;border:none;border-bottom:1.3px solid var(--dark);padding:3px 2px;font-size:14px;background:transparent;}
+  input:focus{outline:none;border-color:var(--gold)!important;}
+
+  h2.sec{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);border-bottom:1px solid var(--line);padding-bottom:4px;margin:14px 0 8px;}
+
+  .panel{background:#faf8f2;border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-bottom:10px;}
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+  .box{min-width:90px;}
+  .box input{width:110px;border:1px solid var(--dark);border-radius:4px;padding:6px 8px;font-size:15px;font-weight:600;text-align:right;background:#fff;}
+  .box.active input{border-color:var(--gold);box-shadow:0 0 0 2px #f1e1b4;}
+  .pbtn{display:block;margin-bottom:3px;font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid var(--dark);background:#fff;cursor:pointer;font-weight:600;}
+  .pbtn.on{background:var(--dark);color:#fff;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center;}
+  .chips span.lbl{font-size:10px;color:#888;}
+  .chip{border:1px dashed #b99a4a;background:#fff8df;color:#6e5518;border-radius:12px;padding:2px 10px;font-size:12px;cursor:pointer;font-weight:600;}
+  .chip:hover{background:#f6e7b3;}
+  .discbox input{border-color:var(--green);color:var(--green);}
+
+  .scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:12px;min-width:1100px;}
+  th{background:#f3efe6;text-transform:uppercase;font-size:9.5px;letter-spacing:.02em;color:#666;padding:5px 4px;border-bottom:1px solid var(--dark);text-align:right;white-space:nowrap;}
+  th.l,td.l{text-align:left;}
+  th.grp{text-align:center;border-bottom:1px solid #bbb;background:#ece5d3;}
+  td{padding:3px 4px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle;}
+  td input{width:100%;border:none;border-bottom:1px dashed #ccc;text-align:right;padding:3px 2px;font-size:12px;background:transparent;}
+  td input.name{text-align:left;min-width:110px;}
+  td input.num{max-width:70px;}
+  td input.pct{max-width:56px;}
+  td input.ov{color:#c0392b;}
+  .ro{font-weight:600;}
+  .disc{color:var(--green);font-weight:700;}
+  tfoot td{font-weight:bold;border-top:2px solid var(--dark);padding:6px 4px;}
+  .sep{border-left:2px solid #ccc;}
+
+  button{cursor:pointer;border:none;border-radius:4px;padding:7px 14px;font-size:12px;font-weight:600;}
+  .btn-add{background:#eee;} .btn-add:hover{background:#e2e2e2;}
+  .btn-apply{background:var(--dark);color:#fff;font-size:11px;}
+  .btn-edit{background:#e6eefb;color:#234;padding:2px 7px;font-size:11px;}
+  .btn-edit.on{background:#234;color:#fff;}
+  td input.amIn{max-width:80px;border-bottom:1px solid var(--gold);font-weight:600;}
+  .btn-del{background:#fbe4e4;color:#a33;padding:2px 7px;font-size:10px;}
+  .btn-print{background:var(--dark);color:#fff;padding:10px 18px;font-size:13px;}
+  .btn-new{background:#4a7c59;color:#fff;padding:10px 18px;font-size:13px;}
+
+  .summary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+  @media(max-width:700px){.summary{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:6px;padding:10px 12px;}
+  .card h3{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#777;}
+  .line{display:flex;justify-content:space-between;padding:3px 0;font-size:13px;}
+  .gt{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:6px;padding:3px 0;font-size:13px;}
+  .gt>:nth-child(n+2){text-align:right;}
+  .gt.gh{font-size:10px;color:#888;text-transform:uppercase;border-bottom:1px solid var(--line);}
+  .gt.save{color:var(--green);font-weight:700;}
+  .gt.big{border-top:2px solid var(--dark);margin-top:6px;padding-top:8px;font-size:15px;font-weight:bold;}
+  .line.big{border-top:2px solid var(--dark);margin-top:6px;padding-top:8px;font-size:16px;font-weight:bold;}
+  .line.save{color:var(--green);font-weight:700;}
+  .spl input{width:110px;border:1px solid var(--dark);border-radius:4px;padding:4px 8px;text-align:right;font-size:14px;font-weight:600;}
+  .actions{margin-top:16px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+  .pv{display:none;}
+  /* fit to text + center */
+  table{width:auto!important;min-width:0!important;margin:0 auto;}
+  .scroll{text-align:center;}
+  table th,table td,td input,td input.name,td input.pur,td input.amIn{text-align:center!important;}
+  th,td{white-space:nowrap;padding-left:7px!important;padding-right:7px!important;}
+  td input,td input.num,td input.pct,td input.pur,td input.name,td input.amIn{width:auto;min-width:0!important;max-width:none!important;}
+  .brand{justify-content:center;}
+  h2.sec{text-align:center;}
+  .row,.chips{justify-content:center;}
+  .actions{justify-content:center;}
+  .card h3{text-align:center;}
+  .gstnote{text-align:center;}
+  .brand .mj{display:none;font-size:22px;font-weight:800;letter-spacing:.04em;margin:0;}
+  .est{flex:1;text-align:center;font-weight:800;font-size:15px;letter-spacing:.05em;align-self:center;}
+  .gstnote{margin-top:12px;font-size:13px;font-weight:600;}
+  td select.pur{font:inherit;text-align:center;text-align-last:center;border:none;border-bottom:1px dashed #bbb;background:transparent;padding:3px 2px;width:auto;min-width:46px;cursor:pointer;}
+  td select.pur:focus{outline:none;border-bottom-color:var(--gold);}
+
+  /* Fine / Amount view */
+  .viewsw{display:flex;gap:6px;align-items:center;justify-content:center;margin:0 0 8px;font-size:12px;color:#666;}
+  .viewsw button{padding:6px 14px;border:1px solid var(--gold);background:#fff;color:var(--gold);border-radius:999px;font-weight:600;cursor:pointer;}
+  .viewsw button.on{background:var(--gold);color:#fff;}
+  .sheet[data-view=fine] .ca{display:none!important;}
+  .sheet[data-view=amt] .cf{display:none!important;}
+  .sheet[data-view=fine] .summary,.sheet[data-view=amt] .summary{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}
+  /* preview (screen only) */
+  @media screen{
+    body.preview{background:#777;padding-top:56px;}
+    body.preview .sheet{width:210mm;max-width:210mm;min-height:297mm;margin:0 auto 20px;padding:calc(8mm + 4px);border-radius:0;box-shadow:0 2px 12px rgba(0,0,0,.5);zoom:var(--vz,1);}
+  }
+  td input.bad{background:#fde8e8!important;border-bottom:2px solid var(--red)!important;color:var(--red)!important;}
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:center;justify-content:center;padding:16px;}
+  .modal.show{display:flex;}
+  .mbox{background:#fff;border-radius:10px;max-width:340px;width:100%;padding:18px 18px 14px;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.4);border-top:5px solid var(--red);}
+  .mbox .mt{font-size:17px;font-weight:800;color:var(--red);margin-bottom:8px;}
+  .mbox .mm{font-size:13px;line-height:1.5;margin-bottom:14px;text-align:left;}
+  .mbox button{background:var(--red);color:#fff;padding:9px 34px;font-size:14px;}
+  .pvbar{display:none;position:fixed;top:0;left:0;right:0;z-index:99;background:#1f1f1f;color:#fff;padding:8px 12px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:12px;}
+  body.preview .pvbar{display:flex;}
+  .pvbar button{padding:7px 14px;}
+</style>
+<style id="printCss" media="print">
+
+    @page{size:A4 portrait;margin:8mm;}
+    body{background:#fff;padding:0;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .sheet{box-shadow:none;padding:4px;max-width:100%;}
+    .no-print,.btn-del,.actions,.chips{display:none!important;}
+    .scroll{overflow:visible;} table{min-width:0;font-size:9.5px;}
+    th{font-size:8px;color:#000;padding-left:2px!important;padding-right:2px!important;} td{padding-top:3px;padding-bottom:3px;padding-left:2px!important;padding-right:2px!important;}
+    td input{font-size:9.5px!important;font-family:inherit!important;}
+    td select.pur{-webkit-appearance:none;appearance:none;border:none!important;background:transparent!important;color:#000!important;font-size:9.5px!important;padding:0!important;min-width:0;}
+    .modal{display:none!important;}
+    td input.name{min-width:0;}
+    .logo,.brand p,.brand .full{display:none!important;}
+    .brand .mj{display:block!important;}
+    input::placeholder{color:transparent!important;}
+    input[type=date]::-webkit-calendar-picker-indicator{display:none!important;}
+    #boxR995:not(.active),#boxR999:not(.active){display:none!important;}
+    td input,.field input,.spl input,.box input{border:none!important;box-shadow:none!important;background:transparent!important;color:#000!important;padding:0;}
+    .disc,.line.save,.gt.save,.discbox input{color:#000!important;}
+    .panel{background:#fff;}
+  
+</style>
+<style media="print">.pvbar{display:none!important;}</style>
+</head>
+<body>
+<div class="modal" id="wrongModal"><div class="mbox"><div class="mt">⚠️ Wrong Entry</div><div class="mm" id="wrongMsg"></div><button onclick="closeWrong()">OK</button></div></div>
+<div class="pvbar">
+  <span>Print Preview (A4)</span>
+  <button class="btn-print" style="background:#fff;color:#1f1f1f" onclick="doPrint()">🖨️ Print</button>
+  <button class="btn-new" onclick="closePreview()">✕ Close Preview</button>
+</div>
+<div class="sheet">
+  <div class="brand">
+    <div class="logo">M</div>
+    <div><h1 class="full">Mehta Jewellers</h1><h1 class="mj">MJ</h1><p>Discount Estimate Voucher</p></div>
+  </div>
+
+  <!-- RATE -->
+  <h2 class="sec">Rate Per 10 Gm</h2>
+  <div class="panel">
+    <div class="row">
+      <div class="box" id="boxR995">
+        <button type="button" class="pbtn on" id="pb995" onclick="setPurity(99.5)">99.5</button>
+        <input id="rate995" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="box" id="boxR999">
+        <button type="button" class="pbtn" id="pb999" onclick="setPurity(99.9)">99.9</button>
+        <input id="rate999" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="no-print" style="font-size:11px;color:#888;max-width:260px;">Tick the purity (99.5 / 99.9) that is being used in this voucher. The selected rate is used for all amounts.</div>
+      <div class="box no-print"><label>GST % (not printed)</label><input id="gstPct" inputmode="decimal" value="3"></div>
+    </div>
+  </div>
+
+  <!-- GROSS / DISCOUNT RATE -->
+  <h2 class="sec">Wastage Rate</h2>
+  <div class="panel">
+    <div class="row">
+      <div class="box">
+        <label>Gross Rate % (MRP)</label>
+        <input id="gMrp" inputmode="decimal" value="105">
+      </div>
+      <div class="box discbox">
+        <label>Discounted Rate %</label>
+        <input id="gDisc" inputmode="decimal" value="92">
+      </div>
+      <button class="btn-apply no-print" onclick="applyAll()">🔄 Apply to All Items</button>
+      <div class="est">ESTIMATE / ON APPROVAL</div>
+    </div>
+    <div class="chips">
+      <span class="lbl">Gross quick pick:</span>
+      <button class="chip" onclick="pickMrp(98)">98</button>
+      <button class="chip" onclick="pickMrp(100)">100</button>
+      <button class="chip" onclick="pickMrp(105)">105</button>
+      <button class="chip" onclick="pickMrp(106)">106</button>
+      <button class="chip" onclick="pickMrp(108)">108</button>
+    </div>
+  </div>
+
+  <!-- ITEMS -->
+  <h2 class="sec">Items</h2>
+  <div class="viewsw no-print">
+    <span>Show:</span>
+    <button id="vBoth" class="on" onclick="setView('both')">Fine + Amount</button>
+    <button id="vFine" onclick="setView('fine')">Fine</button>
+    <button id="vAmt" onclick="setView('amt')">Amount</button>
+  </div>
+  <div class="scroll">
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th class="l" rowspan="2">Sl</th>
+        <th class="l" rowspan="2">Item Name</th>
+        <th rowspan="2">Purity</th>
+        <th rowspan="2">Gross Wt</th>
+        <th rowspan="2">Net Wt</th>
+        <th rowspan="2">Gr. Wastage %</th>
+        <th rowspan="2">Net Wastage %</th>
+
+        <th class="grp sep" colspan="6">Other Charges ₹</th>
+        <th class="grp sep cf" colspan="2">Fine</th>
+        <th class="grp sep ca" colspan="2">Amount ₹</th>
+        <th rowspan="2" class="no-print"></th>
+      </tr>
+      <tr>
+        <th class="sep">AD</th><th>Col.Stone</th><th>Kundan</th><th>Moti</th><th>RD</th><th>Total</th>
+        <th class="sep cf">MRP</th><th class="cf">Discount</th>
+        <th class="sep ca">MRP</th><th class="ca">Discount</th>
+      </tr>
+    </thead>
+    <tbody id="body"></tbody>
+    <tfoot>
+      <tr>
+        <td></td><td class="l">Total</td>
+        <td></td><td id="tGross">0.000</td><td id="tNet">0.000</td><td></td><td></td>
+        <td class="sep" id="tAD">0</td><td id="tCS">0</td><td id="tKU">0</td><td id="tMO">0</td><td id="tRD">0</td><td id="tOth">0</td>
+        <td class="sep cf" id="tFM">0.000</td><td id="tFD" class="disc cf">0.000</td>
+        <td class="sep ca" id="tAM">0</td><td id="tAD2" class="disc ca">0</td>
+        <td class="no-print"></td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+  <div style="margin-top:6px" class="no-print"><button class="btn-add" onclick="addRow()">+ Add Item</button></div>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="card cf">
+      <h3>Fine Weight</h3>
+      <div class="line"><span>Fine @ MRP</span><b id="sFM">0.000</b></div>
+      <div class="line"><span>Fine @ Discount</span><b id="sFD">0.000</b></div>
+      <div class="line save"><span>Discount of Fine</span><b id="sFS">0.000</b></div>
+    </div>
+    <div class="card ca">
+      <h3>Amount</h3>
+      <div class="gt gh"><span></span><span>Without GST</span><span>With GST <span class="gl">3</span>%</span></div>
+      <div class="gt"><span>Amount @ MRP</span><b id="sAM">₹0</b><b id="sAMg">₹0</b></div>
+      <div class="gt"><span>Amount @ Discount</span><b id="sAD">₹0</b><b id="sADg">₹0</b></div>
+      <div class="gt save"><span>Discount</span><b id="sAS">₹0</b><b id="sASg">₹0</b></div>
+      <div class="gt"><span>GST <span class="gl">3</span>% (on Discount amt)</span><span></span><b id="sGstAmt">₹0</b></div>
+      <div class="gt big"><span>Total Amount</span><span id="sTot">₹0</span><span id="sTotG">₹0</span></div>
+    </div>
+  </div>
+  <div class="gstnote ca">G.S.T. <span id="gstNote">3</span>% Extra at the time of Billing</div>
+
+  <div class="actions">
+    <button class="btn-new" onclick="newVoucher()">🆕 New Voucher</button>
+    <button class="btn-add" onclick="openPreview()">👁️ Print Preview</button>
+    <button class="btn-print" onclick="doPrint()">🖨️ Print</button>
+  </div>
+</div>
+
+<script>
+const DIV = {99.5:9.95, 99.9:10};
+let purity = 99.5, n = 0;
+const $ = id => document.getElementById(id);
+const num = v => parseFloat(String(v).replace(/[^0-9.\-]/g,'')) || 0;
+const inr = v => '₹' + Math.round(v).toLocaleString('en-IN');
+const rup = v => Math.round(v).toLocaleString('en-IN');
+
+function save(){
+  try{ localStorage.setItem('mj_disc_rates', JSON.stringify({
+    r995:$('rate995').value, r999:$('rate999').value, mrp:$('gMrp').value, disc:$('gDisc').value, gst:$('gstPct').value, purity })); }catch(e){}
+}
+function restore(){
+  try{
+    const s = JSON.parse(localStorage.getItem('mj_disc_rates')||'null'); if(!s) return;
+    $('rate995').value = s.r995||''; $('rate999').value = s.r999||'';
+    $('gMrp').value = s.mrp||105; $('gDisc').value = s.disc||92;
+    if(s.gst!==undefined && s.gst!=='') $('gstPct').value = s.gst;
+    if(s.purity) purity = s.purity;
+  }catch(e){}
+}
+function setPurity(p){
+  purity = p;
+  $('pb995').classList.toggle('on', p===99.5);
+  $('pb999').classList.toggle('on', p===99.9);
+  $('boxR995').classList.toggle('active', p===99.5);
+  $('boxR999').classList.toggle('active', p===99.9);
+  save(); recalc();
+}
+function rate(){ return num(purity===99.5 ? $('rate995').value : $('rate999').value); }
+
+function addRow(){
+  n++;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="l sl"></td>
+    <td class="l"><input class="name" placeholder="e.g. Haar" autocomplete="off"></td>
+    <td><select class="pur"><option value=""></option><option value="22">22</option><option value="18">18</option></select></td>
+    <td><input class="num gross" inputmode="decimal" placeholder="0.000"></td>
+    <td><input class="num net" inputmode="decimal" value="0.000"></td>
+    <td><input class="pct mrp" inputmode="decimal"></td>
+    <td><input class="pct dsc" inputmode="decimal"></td>
+
+    <td class="sep"><input class="num ad" inputmode="decimal" placeholder="0"></td>
+    <td><input class="num cs" inputmode="decimal" placeholder="0"></td>
+    <td><input class="num ku" inputmode="decimal" placeholder="0"></td>
+    <td><input class="num mo" inputmode="decimal" placeholder="0"></td>
+    <td><input class="num rd" inputmode="decimal" placeholder="0"></td>
+    <td class="ro oth">0</td>
+    <td class="sep ro fm cf">0.000</td><td class="disc fd cf">0.000</td>
+    <td class="sep ro am ca">0</td><td class="disc ad2 ca">0</td>
+    <td class="no-print" style="white-space:nowrap"><button class="btn-edit" title="Edit amount" onclick="toggleEdit(this)">✏️</button> <button class="btn-del" onclick="this.closest('tr').remove();renum();recalc();">✕</button></td>`;
+  $('body').appendChild(tr);
+  tr.querySelector('.mrp').value = $('gMrp').value;
+  tr.querySelector('.dsc').value = $('gDisc').value;
+  tr.querySelectorAll('input').forEach(i=>{
+    i.addEventListener('focus', ()=>setTimeout(()=>{try{i.select()}catch(e){}},0));
+    i.addEventListener('input', ()=>{
+      if(i.classList.contains('mrp')||i.classList.contains('dsc')){ i.dataset.ov='1'; i.classList.add('ov'); }
+      recalc();
+    });
+  });
+  tr.querySelector('.net').addEventListener('blur', e=>{ e.target.value = num(e.target.value).toFixed(3); });
+  tr.querySelector('.gross').addEventListener('blur', e=>{ if(e.target.value.trim()!=='') e.target.value = num(e.target.value).toFixed(3); });
+  renum(); recalc();
+  tr.querySelector('.name').focus();
+}
+function toggleEdit(btn){
+  const tr = btn.closest('tr');
+  const am = tr.querySelector('.am'), ad = tr.querySelector('.ad2');
+  if(tr.dataset.edit==='1'){
+    delete tr.dataset.edit; btn.classList.remove('on');
+  } else {
+    const a = num(am.textContent), d = num(ad.textContent);
+    tr.dataset.edit = '1'; btn.classList.add('on');
+    am.innerHTML = '<input class="num amIn" inputmode="decimal">';
+    ad.innerHTML = '<input class="num adIn" inputmode="decimal">';
+    am.firstChild.value = a; ad.firstChild.value = d;
+    [am.firstChild, ad.firstChild].forEach(i=>{
+      i.addEventListener('focus', ()=>setTimeout(()=>{try{i.select()}catch(e){}},0));
+      i.addEventListener('input', recalc);
+    });
+    am.firstChild.focus();
+  }
+  recalc();
+}
+function setView(v){
+  document.querySelector('.sheet').dataset.view = v;
+  $('vBoth').classList.toggle('on', v==='both');
+  $('vFine').classList.toggle('on', v==='fine');
+  $('vAmt').classList.toggle('on', v==='amt');
+  try{ localStorage.setItem('mj_disc_view', v); }catch(e){}
+  fitAll();
+  rowsBad();
+  if(document.body.classList.contains('preview')) fitPreview();
+}
+let wrongFocus = null;
+function rowsBad(){
+  const bad = [];
+  document.querySelectorAll('#body tr').forEach((tr,i)=>{
+    const gEl = tr.querySelector('.gross'), nEl = tr.querySelector('.net');
+    const g = num(gEl.value), n = num(nEl.value);
+    const isBad = gEl.value.trim()!=='' && n > g + 1e-9;
+    gEl.classList.toggle('bad', isBad); nEl.classList.toggle('bad', isBad);
+    if(isBad) bad.push({row:i+1, g, n, el:nEl});
+  });
+  return bad;
+}
+function showWrong(list){
+  $('wrongMsg').innerHTML = list.map(b=>`Row ${b.row}: Net Wt <b>${b.n.toFixed(3)}</b> is more than Gross Wt <b>${b.g.toFixed(3)}</b>.`).join('<br>') + '<br><br>Net Wt cannot be more than Gross Wt. Please correct it.';
+  wrongFocus = list[0].el;
+  $('wrongModal').classList.add('show');
+}
+function closeWrong(){
+  $('wrongModal').classList.remove('show');
+  if(wrongFocus){ wrongFocus.focus(); try{wrongFocus.select();}catch(e){} }
+}
+function fitPreview(){
+  const sheet = document.querySelector('.sheet'), tbl = $('tbl');
+  document.body.style.setProperty('--vz', 1);
+  tbl.style.zoom = ''; fitAll();
+  const cs = getComputedStyle(sheet);
+  const availW = sheet.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const tw = tbl.offsetWidth;
+  tbl.style.zoom = tw > availW ? String(availW / tw * 0.99) : '';
+  const vz = Math.min(1, (window.innerWidth - 12) / sheet.offsetWidth);
+  document.body.style.setProperty('--vz', vz);
+}
+function openPreview(){
+  const bad = rowsBad(); if(bad.length){ showWrong(bad); return false; }
+  document.getElementById('printCss').media = 'all';
+  document.body.classList.add('preview'); window.scrollTo(0,0);
+  fitPreview();
+  return true;
+}
+function closePreview(){
+  document.getElementById('printCss').media = 'print';
+  document.body.classList.remove('preview');
+  $('tbl').style.zoom = '';
+}
+function doPrint(){
+  if(!openPreview()) return;
+  setTimeout(()=>window.print(), 150);
+}
+window.addEventListener('resize', ()=>{ if(document.body.classList.contains('preview')) fitPreview(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closePreview(); });
+function fit(i){
+  i.style.width = (Math.max(String(i.value).length, (i.placeholder||'').length, 3) + 1.5) + 'ch';
+}
+function fitAll(){ document.querySelectorAll('#body input').forEach(fit); }
+function renum(){ document.querySelectorAll('#body tr .sl').forEach((c,i)=>c.textContent=i+1); }
+
+function recalc(){
+  const r = rate(), d = DIV[purity];
+  let T = {gross:0,net:0,ad:0,cs:0,ku:0,mo:0,rd:0,oth:0,fm:0,fd:0,am:0,ad2:0};
+  document.querySelectorAll('#body tr').forEach(tr=>{
+    const q = s => tr.querySelector(s);
+    const gross = num(q('.gross').value);
+    const net = num(q('.net').value), mrp = num(q('.mrp').value), dsc = num(q('.dsc').value);
+    const ad = num(q('.ad').value), cs = num(q('.cs').value), ku = num(q('.ku').value);
+    const mo = num(q('.mo').value), rdv = num(q('.rd').value);
+    const oth = ad+cs+ku+mo+rdv;
+    const fm = net*mrp/100, fd = net*dsc/100;
+    let am = (r/d)*fm + oth, ad2 = (r/d)*fd + oth;
+    q('.oth').textContent = rup(oth);
+    q('.fm').textContent = fm.toFixed(3); q('.fd').textContent = fd.toFixed(3);
+    if(tr.dataset.edit==='1'){ am = num(q('.amIn').value); ad2 = num(q('.adIn').value); }
+    else { q('.am').textContent = rup(am); q('.ad2').textContent = rup(ad2); }
+    T.gross+=gross; T.net+=net; T.ad+=ad; T.cs+=cs; T.ku+=ku; T.mo+=mo; T.rd+=rdv; T.oth+=oth; T.fm+=fm; T.fd+=fd; T.am+=Math.round(am); T.ad2+=Math.round(ad2);
+  });
+  $('tGross').textContent = T.gross.toFixed(3); $('tNet').textContent = T.net.toFixed(3);
+  $('tAD').textContent = rup(T.ad); $('tCS').textContent = rup(T.cs); $('tKU').textContent = rup(T.ku); $('tMO').textContent = rup(T.mo); $('tRD').textContent = rup(T.rd); $('tOth').textContent = rup(T.oth);
+  $('tFM').textContent = T.fm.toFixed(3); $('tFD').textContent = T.fd.toFixed(3);
+  $('tAM').textContent = rup(T.am); $('tAD2').textContent = rup(T.ad2);
+
+  $('sFM').textContent = T.fm.toFixed(3); $('sFD').textContent = T.fd.toFixed(3);
+  $('sFS').textContent = (T.fm-T.fd).toFixed(3);
+  const gp = num($('gstPct').value), k = 1 + gp/100;
+  const gstAmt = Math.round(T.ad2*gp/100), amG = Math.round(T.am*k), adG = T.ad2 + gstAmt;
+  $('sAM').textContent = inr(T.am); $('sAD').textContent = inr(T.ad2); $('sAS').textContent = inr(T.am-T.ad2);
+  $('sAMg').textContent = inr(amG); $('sADg').textContent = inr(adG); $('sASg').textContent = inr(amG-adG);
+  $('sGstAmt').textContent = inr(gstAmt);
+  $('sTot').textContent = inr(T.ad2); $('sTotG').textContent = inr(adG);
+  document.querySelectorAll('.gl').forEach(e=>e.textContent = String(gp));
+  $('gstNote').textContent = String(gp);
+  fitAll();
+  rowsBad();
+  if(document.body.classList.contains('preview')) fitPreview();
+}
+
+function pickMrp(v){ $('gMrp').value = v; globalChanged(); }
+function globalChanged(){
+  document.querySelectorAll('#body tr').forEach(tr=>{
+    const m = tr.querySelector('.mrp'), d = tr.querySelector('.dsc');
+    if(!m.dataset.ov) m.value = $('gMrp').value;
+    if(!d.dataset.ov) d.value = $('gDisc').value;
+  });
+  save(); recalc();
+}
+function applyAll(){
+  document.querySelectorAll('#body tr').forEach(tr=>{
+    ['.mrp','.dsc'].forEach(s=>{ const i = tr.querySelector(s); delete i.dataset.ov; i.classList.remove('ov'); });
+  });
+  globalChanged();
+}
+function newVoucher(){ $('body').innerHTML=''; n=0; addRow(); }
+
+['rate995','rate999'].forEach(id=>$(id).addEventListener('input', ()=>{save();recalc();}));
+$('gMrp').addEventListener('input', globalChanged);
+$('gDisc').addEventListener('input', globalChanged);
+$('gstPct').addEventListener('input', ()=>{ save(); recalc(); });
+document.addEventListener('focusin', e=>{ const el=e.target; if(el.tagName==='INPUT' && el.inputMode==='decimal') setTimeout(()=>{try{el.select()}catch(x){}},0); });
+
+document.addEventListener('focusout', ()=>setTimeout(fitAll,0));
+$('body').addEventListener('change', e=>{
+  const c = e.target.classList;
+  if(!(c.contains('gross') || c.contains('net'))) return;
+  const tr = e.target.closest('tr');
+  const bad = rowsBad().filter(b=>b.el.closest('tr')===tr);
+  if(bad.length) showWrong(bad);
+});
+restore();
+try{ setView(localStorage.getItem('mj_disc_view') || 'both'); }catch(e){ setView('both'); }
+setPurity(purity);
+addRow();
+
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
